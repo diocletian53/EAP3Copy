@@ -9,18 +9,18 @@ def process_excels(main_file, master_file):
 
     if carrier_selection == "fedex":
         # Keep only FEDEX, delete OnTrac & UPS
-        data = data[~data.apply(lambda row: row.astype(str).str.contains("ONTRAC", case=False, na=False)).any(axis=1)]
-        data = data[~data.apply(lambda row: row.astype(str).str.contains("UPS", case=False, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("UPSN", case=True, na=False)).any(axis=1)]
 
     elif carrier_selection == "ontrac":
         # Keep only ONTRAC, delete FedEx & UPS
-        data = data[~data.apply(lambda row: row.astype(str).str.contains("FEDEX|FDX", case=False, na=False)).any(axis=1)]
-        data = data[~data.apply(lambda row: row.astype(str).str.contains("UPS", case=False, na=False)).any(axis=1)]
+          data = data[~data.apply(lambda row: row.astype(str).str.contains("UPSN", case=True, na=False)).any(axis=1)]
+         data = data[~data.apply(lambda row: row.astype(str).str.contains("FDEG", case=True, na=False)).any(axis=1)]
 
     elif carrier_selection == "ups":
         # Keep only UPS, delete FedEx & OnTrac
-        data = data[~data.apply(lambda row: row.astype(str).str.contains("FEDEX|FDX", case=False, na=False)).any(axis=1)]
-        data = data[~data.apply(lambda row: row.astype(str).str.contains("ONTRAC", case=False, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("FDEG", case=True, na=False)).any(axis=1)]
 
 
    # if carrier_selection == "fedex":
