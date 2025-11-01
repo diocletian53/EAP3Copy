@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Home Depots Excel Processor</title>
+  <title>Home Depot Excel Processor</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="https://www.homedepot.com/favicon.ico" />
 </head>
 
 <body class="bg-orange-50 font-sans min-h-screen flex items-center justify-center">
@@ -19,49 +20,60 @@
     </p>
 
     <!-- Upload Form -->
-    <form method="POST" enctype="multipart/form-data" action="/process" id="uploadForm" class="space-y-6">
+    <form method="POST" enctype="multipart/form-data" id="uploadForm" class="space-y-6">
 
       <!-- Blob Excel -->
       <div>
-        <label class="block text-left font-medium text-orange-600 mb-1">Blob_Blob.xlsx</label>
+        <label class="block text-left font-medium text-orange-600 mb-1">
+          Blob_Blob.xlsx
+        </label>
         <input 
           type="file" 
           name="main_file" 
           accept=".xlsx" 
           required
-          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500"
+          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 
+                 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
 
       <!-- Master Excel -->
       <div>
-        <label class="block text-left font-medium text-orange-600 mb-1">master.xlsx</label>
+        <label class="block text-left font-medium text-orange-600 mb-1">
+          master.xlsx
+        </label>
         <input 
           type="file" 
           name="master_file" 
           accept=".xlsx" 
           required
-          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500"
+          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 
+                 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
 
       <!-- SCAC CD (Carrier) -->
       <div>
-        <label class="block text-left font-medium text-orange-600 mb-2">Select SCAC CD (Carrier)</label>
+        <label class="block text-left font-medium text-orange-600 mb-2">
+          Select SCAC CD (Carrier)
+        </label>
         <div class="flex flex-col space-y-3 bg-orange-50 p-4 rounded-lg border border-orange-200">
           
           <label class="inline-flex items-center cursor-pointer">
-            <input type="radio" name="carrier" value="FedEx" required class="text-orange-600 focus:ring-orange-600">
+            <input type="radio" name="carrier" value="FedEx" required 
+                   class="text-orange-600 focus:ring-orange-600">
             <span class="ml-3 text-gray-800 font-medium">FedEx</span>
           </label>
 
           <label class="inline-flex items-center cursor-pointer">
-            <input type="radio" name="carrier" value="OnTrac" class="text-orange-600 focus:ring-orange-600">
+            <input type="radio" name="carrier" value="OnTrac" 
+                   class="text-orange-600 focus:ring-orange-600">
             <span class="ml-3 text-gray-800 font-medium">OnTrac</span>
           </label>
 
           <label class="inline-flex items-center cursor-pointer">
-            <input type="radio" name="carrier" value="UPS" class="text-orange-600 focus:ring-orange-600">
+            <input type="radio" name="carrier" value="UPS" 
+                   class="text-orange-600 focus:ring-orange-600">
             <span class="ml-3 text-gray-800 font-medium">UPS</span>
           </label>
         </div>
@@ -69,8 +81,9 @@
 
       <!-- Submit Button -->
       <button 
-        type="Submits"
-        class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-lg shadow-md transition-colors"
+        type="submit"
+        class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-lg 
+               shadow-md transition-colors"
       >
         Process Files
       </button>
@@ -83,14 +96,18 @@
 
     <!-- Error Message -->
     {% if error %}
-      <div class="mt-5 bg-orange-100 border border-orange-300 text-orange-800 p-4 rounded-lg text-center font-medium">
+      <div class="mt-5 bg-orange-100 border border-orange-300 text-orange-800 p-4 rounded-lg 
+                  text-center font-medium">
         ⚠️ {{ error }}
       </div>
     {% endif %}
 
     <!-- Footer -->
     <div class="mt-8 text-center text-gray-500 text-sm">
-      <p>Created by <span class="font-semibold text-orange-600">Home Depot EAP3</span></p>
+      <p>
+        Created by 
+        <span class="font-semibold text-orange-600">Home Depot EAP3</span>
+      </p>
     </div>
   </div>
 
