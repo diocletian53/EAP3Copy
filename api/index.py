@@ -1,6 +1,5 @@
-from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask import Flask, render_template, request, send_file
 from process_excel import process_excels
-import io
 import os
 
 # --- Flask setup ---
@@ -11,13 +10,17 @@ def index():
     if request.method == "POST":
         main_file = request.files.get("main_file")
         master_file = request.files.get("master_file")
+        carrier = request.form.get("carrier")  # Get the third input
 
-        if not main_file or not master_file:
-            return render_template("index.html", error="⚠️ Please upload both files before processing.")
+        if not main_file or not master_file or not carrier:
+            return render_template(
+                "index.html", 
+                error="⚠️ Please upload both files and select a carrier."
+            )
 
         try:
-            # Run main processing
-            output = process_excels(main_file, master_file)
+            # Run processing
+            output = process_excels(main_file, master_file, carrier)
 
             # Return the processed Excel file
             return send_file(
@@ -28,10 +31,11 @@ def index():
             )
 
         except Exception as e:
-            # Capture and show any processing errors
-            return render_template("index.html", error=f"❌ Processing failed: {str(e)}")
+            return render_template(
+                "index.html", 
+                error=f"❌ Processing failed: {str(e)}"
+            )
 
-    # Render the upload form by default
     return render_template("index.html")
 
 # --- Health check route ---
@@ -39,10 +43,8 @@ def index():
 def health():
     return {"status": "ok", "message": "EAP Flask app running successfully"}
 
-# --- Vercel entry point ---
+# --- Vercel / Local dev ---
 if __name__ != "__main__":
-    # For Vercel’s WSGI handler
     app = app
 else:
-    # Local dev server
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
