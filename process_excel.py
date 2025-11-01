@@ -5,6 +5,41 @@ import io
 def process_excels(main_file, master_file):
     # ---------- Step 1: Read main file ----------
     data = pd.read_excel(main_file)
+   carrier_selection = str(carrier).strip().lower()  # clean and normalize
+
+    if carrier_selection == "fedex":
+        # Keep only FEDEX, delete OnTrac & UPS
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("ONTRAC", case=False, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("UPS", case=False, na=False)).any(axis=1)]
+
+    elif carrier_selection == "ontrac":
+        # Keep only ONTRAC, delete FedEx & UPS
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("FEDEX|FDX", case=False, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("UPS", case=False, na=False)).any(axis=1)]
+
+    elif carrier_selection == "ups":
+        # Keep only UPS, delete FedEx & OnTrac
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("FEDEX|FDX", case=False, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("ONTRAC", case=False, na=False)).any(axis=1)]
+
+
+   # if carrier_selection == "fedex":
+        # Keep only FEDEX, delete OnTrac & UPS
+   #  master = master[~master.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
+  #   master = master[~master.apply(lambda row: row.astype(str).str.contains("UPSN", case=True, na=False)).any(axis=1)]
+
+ #    elif carrier_selection == "ontrac":
+        # Keep only ONTRAC, delete FedEx & UPS
+   #   master = master[~master.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
+  #   master = master[~master.apply(lambda row: row.astype(str).str.contains("UPSN", case=True, na=False)).any(axis=1)]
+
+  #   elif carrier_selection == "ups":
+        # Keep only UPS, delete FedEx & OnTrac
+  #  master = master[~master.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
+ #    master = master[~master.apply(lambda row: row.astype(str).str.contains("UPSN", case=True, na=False)).any(axis=1)]
+
+
+
 
     # Rename columns to match desired
     column_mapping = {
