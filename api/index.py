@@ -11,13 +11,18 @@ def index():
     if request.method == "POST":
         main_file = request.files.get("main_file")
         master_file = request.files.get("master_file")
+        carrier = request.form.get("carrier")  # <-- read radio button
 
-        if not main_file or not master_file:
-            return render_template("index.html", error="⚠️ Please upload both files before processing.")
+        # Check for missing inputs
+        if not main_file or not master_file or not carrier:
+            return render_template(
+                "index.html",
+                error="⚠️ Please upload both files and select a carrier before processing."
+            )
 
         try:
             # Run main processing
-            output = process_excels(main_file, master_file)
+            output = process_excels(main_file, master_file, carrier)
 
             # Return the processed Excel file
             return send_file(
@@ -41,8 +46,6 @@ def health():
 
 # --- Vercel entry point ---
 if __name__ != "__main__":
-    # For Vercel’s WSGI handler
-    app = app
+    app = app  # for Vercel
 else:
-    # Local dev server
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
