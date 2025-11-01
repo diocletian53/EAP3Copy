@@ -5,7 +5,8 @@ import io
 def process_excels(main_file, master_file):
     # ---------- Step 1: Read main file ----------
     data = pd.read_excel(main_file)
-   carrier_selection = str(carrier).strip().lower()  # clean and normalize
+  # normalize carrier input
+    carrier_selection = str(carrier).strip().lower()
 
     if carrier_selection == "fedex":
         # Keep only FEDEX, delete OnTrac & UPS
@@ -14,16 +15,15 @@ def process_excels(main_file, master_file):
 
     elif carrier_selection == "ontrac":
         # Keep only ONTRAC, delete FedEx & UPS
-          data = data[~data.apply(lambda row: row.astype(str).str.contains("UPSN", case=True, na=False)).any(axis=1)]
-         data = data[~data.apply(lambda row: row.astype(str).str.contains("FDEG", case=True, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("UPSN", case=True, na=False)).any(axis=1)]
+        data = data[~data.apply(lambda row: row.astype(str).str.contains("FDEG", case=True, na=False)).any(axis=1)]
 
     elif carrier_selection == "ups":
         # Keep only UPS, delete FedEx & OnTrac
         data = data[~data.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
         data = data[~data.apply(lambda row: row.astype(str).str.contains("FDEG", case=True, na=False)).any(axis=1)]
 
-
-   # if carrier_selection == "fedex":
+    # (rest of your code follows…)  # if carrier_selection == "fedex":
         # Keep only FEDEX, delete OnTrac & UPS
    #  master = master[~master.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
   #   master = master[~master.apply(lambda row: row.astype(str).str.contains("UPSN", case=True, na=False)).any(axis=1)]
