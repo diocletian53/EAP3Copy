@@ -21,7 +21,9 @@ def process_excels(main_file, master_file, carrier):
         # Keep only UPS, delete FedEx & OnTrac
         data = data[~data.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
         data = data[~data.apply(lambda row: row.astype(str).str.contains("FDEG", case=True, na=False)).any(axis=1)]
-
+    elif carrier_selection == "ALL":
+        # Keep only UPS, delete FedEx & OnTrac
+        pass
     # (rest of your code follows…)  # if carrier_selection == "fedex":
         # Keep only FEDEX, delete OnTrac & UPS
    #  master = master[~master.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
