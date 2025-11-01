@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask import Flask, render_template, request, send_file
 from process_excel import process_excels
 import io
 import os
@@ -9,11 +9,12 @@ app = Flask(__name__, template_folder="../templates", static_folder="../static")
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
+        # Get uploaded files
         main_file = request.files.get("main_file")
         master_file = request.files.get("master_file")
-        carrier = request.form.get("carrier")  # <-- read radio button
+        carrier = request.form.get("carrier")  # radio button value
 
-        # Check for missing inputs
+        # Validate user input
         if not main_file or not master_file or not carrier:
             return render_template(
                 "index.html",
@@ -21,10 +22,10 @@ def index():
             )
 
         try:
-            # Run main processing
+            # Call your Excel processor function
             output = process_excels(main_file, master_file, carrier)
 
-            # Return the processed Excel file
+            # Send back the processed Excel file
             return send_file(
                 output,
                 as_attachment=True,
@@ -33,19 +34,23 @@ def index():
             )
 
         except Exception as e:
-            # Capture and show any processing errors
+            # Display any error message on the page
             return render_template("index.html", error=f"❌ Processing failed: {str(e)}")
 
-    # Render the upload form by default
+    # Default page (GET request)
     return render_template("index.html")
+
 
 # --- Health check route ---
 @app.route("/health")
 def health():
     return {"status": "ok", "message": "EAP Flask app running successfully"}
 
-# --- Vercel entry point ---
+
+# --- Entry point for Vercel and local development ---
 if __name__ != "__main__":
-    app = app  # for Vercel
+    # Vercel looks for a WSGI callable named 'app'
+    app = app
 else:
+    # Run locally
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
