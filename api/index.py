@@ -3,7 +3,7 @@ from process_excel import process_excels
 import os
 
 # --- Flask setup ---
-app = Flask(__name__, template_folder="templates", static_folder="static")
+app = Flask(__name__, template_folder="../templates", static_folder="../static")
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -11,21 +11,21 @@ def index():
         # Get uploaded files
         main_file = request.files.get("main_file")
         master_file = request.files.get("master_file")
-        vlookup_file = request.files.get("vlookup_file")  # optional
-        carrier = request.form.get("carrier")
+        vlookup_file = request.files.get("vlookup_file")  # required now
+        carrier = request.form.get("carrier")  # Carrier selection
 
-        # Validate input
-        if not main_file or not master_file or not carrier:
+        # Validation
+        if not main_file or not master_file or not vlookup_file or not carrier:
             return render_template(
-                "index.html",
-                error="⚠️ Please upload both main and master files and select a carrier."
+                "index.html", 
+                error="⚠️ Please upload main, master, and VLOOKUP files, and select a carrier."
             )
 
         try:
-            # Process the Excel files
+            # Process Excel files
             output = process_excels(main_file, master_file, carrier, vlookup_file)
 
-            # Return the processed Excel file to the user
+            # Send processed Excel back
             return send_file(
                 output,
                 as_attachment=True,
@@ -34,22 +34,21 @@ def index():
             )
 
         except Exception as e:
-            # Show error on frontend
+            import traceback
+            print(traceback.format_exc())  # print detailed error in server logs
             return render_template(
-                "index.html",
+                "index.html", 
                 error=f"❌ Processing failed: {str(e)}"
             )
 
-    # GET request: render the upload form
+    # GET request → render form
     return render_template("index.html")
-
 
 # --- Health check route ---
 @app.route("/health")
 def health():
-    return {"status": "ok", "message": "Home Depot Excel Processor Flask app running successfully"}
+    return {"status": "ok", "message": "EAP Flask app running successfully"}
 
-
-# --- Run Flask app locally or via Vercel ---
+# --- Run Flask ---
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
