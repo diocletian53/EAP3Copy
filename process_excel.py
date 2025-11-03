@@ -1,8 +1,41 @@
 import pandas as pd
 import numpy as np
 import io
-def process_excels(main_file, master_file, carrier):
-    # ---------- Step 1: Read main file ----------
+
+
+# ---------- Step 0 : VLOOK UP Method ----------
+# Debug-friendly version
+
+def vlookup(left_df,right_df,left_key,right_key,right_val):
+    """Q
+    left_df : path to excel data which requires vlookup values
+    right_df: path to excel data which is going to provide vlookup values
+    left_key: the key column in the left dataset
+    right_key: the key column in the right dataset
+    right_val: the column in the right dataset whose values need to be moved to the right dataset
+    Arguments / parameters explained:
+
+    #=VLOOKUP(A2, centiro!A:B, 2, FALSE)    
+    left_df → Excel file we want to enrich (left table in VLOOKUP). (BaseFormOutput)
+    right_df → Excel file we use to look up values (right table in VLOOKUP). (centiro!)
+    left_key → column in left table that will be matched.:  (A2) = (A2)
+    right_key → column in right table that will be matched.  (A2) = (A2)
+    right_val → column in right table whose values will be pulled into left table. (Returns 2)
+    """
+    left = pd.read_excel(left_df)
+    left.reset_index(inplace=True)
+    right = pd.read_excel(right_df)
+    right = right.loc[:,[right_key,right_val]].rename(columns={right_key:left_key})
+    temp = left.merge(right, how="left", on=left_key)
+    temp.drop_duplicates(subset=["index"], keep ="first", inplace=True)
+    return temp.set_index("index")
+
+
+
+
+
+def process_excels(main_file, master_file, carrier, vlookup_file=None):
+        # ---------- Step 1: Read main file ----------
     data = pd.read_excel(main_file)
   # normalize carrier input
     carrier_selection = str(carrier).strip().lower()
@@ -24,6 +57,9 @@ def process_excels(main_file, master_file, carrier):
     elif carrier_selection == "ALL":
         # Keep only UPS, delete FedEx & OnTrac
         pass
+
+
+
     # (rest of your code follows…)  # if carrier_selection == "fedex":
         # Keep only FEDEX, delete OnTrac & UPS
    #  master = master[~master.apply(lambda row: row.astype(str).str.contains("EMSY", case=True, na=False)).any(axis=1)]
@@ -56,7 +92,7 @@ def process_excels(main_file, master_file, carrier):
 
     desired_columns = [
         "SCAC_CD","LOC_NBR","DEST_ZIP_CD","ORIG_ZIP_CD",
-        "LINE_HAUL_DAYS","HUB_TO_CUST_DAYS","TOT_DAYS",
+        "LINE_HAUL_DAYS","HUB_TO_CUST_DAYS",
         "HUB_CITY_NM","HUB_CODE","IS_ACTIVE",
         "SAT_DELV","SUN_DELV","SAT_PROMISE","SUN_PROMISE",
         "SAT_OVN_MOVE","SUN_OVN_MOVE","RGN","CAR_TYP",
@@ -77,8 +113,15 @@ def process_excels(main_file, master_file, carrier):
 
     # HUB_CITY_NM → HUB_CODE mapping
     city_to_hub = {
-        "COLUMBUS_FEDEX": 380,"COLUMBUS_UPS": 614,"CHICAGO_EARLY": 171,"CHICAGO_LATE": 191,
-        "CCHIL_N": 290,"CCHIL_T": 292,"ROADIE_CHICAGO": 295,"EARLY_LOCAL": 180,"LATE_LOCAL": 220,
+        "COLUMBUS_FEDEX": 380,
+        "COLUMBUS_UPS": 614,
+        "CHICAGO_EARLY": 171,
+        "CHICAGO_LATE": 191,
+        "CCHIL_N": 290,
+        "CCHIL_T": 292,
+        "ROADIE_CHICAGO": 295,
+        "EARLY_LOCAL": 180,
+        "LATE_LOCAL": 220,
         "DALLAS_UPS_EARLY": 170,"DALLAS_UPS_LATE": 219,"ROADIE_DALLAS": 120,"BALTIMORE_FEDEX": 231,
         "BALTIMORE_UPS": 230,"ROADIE_BALTIMORE": 235,"FEDEX_HOUSTON": 211,"ROADIE_HOUSTON": 215,
         "UPS_HOUSTON": 210,"LACEY_ONTRAC": 400,"LACEY_FEDEX": 600,"LACEY_UPS": 500,
@@ -107,7 +150,46 @@ def process_excels(main_file, master_file, carrier):
     data["IS_ACTIVE"] = 1
     data["RGN"] = "NORTHLAKE01"
     data["CAR_TYP"] = "A"
-    data["HUB_TO_CUST_DAYS"] = data["TOT_DAYS"]
+
+
+    # ---------- Step 4: Optional VLOOKUP ----------
+    vlookup_df = vlookup(main_file, vlookup_file, "DEST_ZIP_CD", "DEST_ZIP_CD", "NEW_TT")
+
+# --- Add NEW_TT column to data (after TOT_DAYS) ---
+    data = data.merge(
+    vlookup_df[["DEST_ZIP_CD", "NEW_TT"]],
+    on="DEST_ZIP_CD",
+    how="left"
+)
+
+# Reorder columns to place NEW_TT right after TOT_DAYS
+    cols = data.columns.tolist()
+    insert_at = cols.index("HUB_TO_CUST_DAYS") + 1
+    cols.insert(insert_at, cols.pop(cols.index("NEW_TT")))
+    data = data[cols]
+
+    data["HUB_TO_CUST_DAYS"] = data["NEW_TT"]
+# Drop the old TOT_DAYS column
+#data = data.drop(columns=["TOT_DAYS"], errors='ignore')
+
+
+    #VLOOKUP(A2, centiro!A:B, 2, FALSE)    
+    #left_df → Excel file we want to enrich (left table in VLOOKUP). (BaseFormOutput)
+    #right_df → Excel file we use to look up values (right table in VLOOKUP). (centiro!)
+    #left_key → column in left table that will be matched.:  (A2) = (A2)
+    #right_key → column in right table that will be matched.  (A2) = (A2)
+    #right_val → column in right table whose values will be pulled into left table. (Returns 2)
+    #vlookup_df.to_excel("vlookup_result.xlsx", index=False)
+    
+
+
+
+
+
+
+
+
+
 
     # ---------- Build Summary ----------
     summary_df = data[["SCAC_CD","LOC_NBR", "HUB_CITY_NM", "HUB_CODE"]].drop_duplicates()

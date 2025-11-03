@@ -8,6 +8,7 @@
   <link rel="icon" href="https://www.homedepot.com/favicon.ico" />
 </head>
 <body class="bg-orange-50 font-sans min-h-screen flex items-center justify-center">
+
   <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
     
     <!-- Title -->
@@ -15,25 +16,31 @@
       Home Depot Excel Processor
     </h1>
     <p class="text-gray-700 text-center mb-6">
-      Upload your Blob and Master Excel files and select a carrier.
+      Upload your Excel files and select a carrier.
     </p>
 
     <!-- Upload Form -->
     <form method="POST" enctype="multipart/form-data" id="uploadForm" class="space-y-6">
+      
       <!-- Main File -->
       <div>
         <label class="block text-left font-medium text-orange-600 mb-1">Blob_Blob.xlsx</label>
         <input type="file" name="main_file" accept=".xlsx" required
-          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 
-                 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500" />
+          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500" />
       </div>
 
       <!-- Master File -->
       <div>
         <label class="block text-left font-medium text-orange-600 mb-1">master.xlsx</label>
         <input type="file" name="master_file" accept=".xlsx" required
-          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 
-                 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500" />
+          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500" />
+      </div>
+
+      <!-- Optional VLOOKUP File -->
+      <div>
+        <label class="block text-left font-medium text-orange-600 mb-1">VLOOKUP Excel (Optional)</label>
+        <input type="file" name="vlookup_file" accept=".xlsx"
+          class="w-full p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-100 hover:border-orange-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500" />
       </div>
 
       <!-- Carrier Selection -->
@@ -52,7 +59,7 @@
             <input type="radio" name="carrier" value="UPS" class="text-orange-600 focus:ring-orange-600">
             <span class="ml-3 text-gray-800 font-medium">UPS</span>
           </label>
-           <label class="inline-flex items-center cursor-pointer">
+          <label class="inline-flex items-center cursor-pointer">
             <input type="radio" name="carrier" value="ALL" class="text-orange-600 focus:ring-orange-600">
             <span class="ml-3 text-gray-800 font-medium">ALL</span>
           </label>
@@ -66,19 +73,19 @@
       </button>
     </form>
 
-    <!-- Optional Loading Text -->
+    <!-- Loading Text -->
     <p id="loadingText" class="mt-4 text-center text-orange-600 font-medium hidden">
       ⏳ Processing your files... Please wait.
     </p>
 
-    <!-- Optional Error Message -->
+    <!-- Error Message -->
     {% if error %}
       <div class="mt-5 bg-orange-100 border border-orange-300 text-orange-800 p-4 rounded-lg text-center font-medium">
         ⚠️ {{ error }}
       </div>
     {% endif %}
 
-    <!-- Optional Success Message -->
+    <!-- Success Message -->
     {% if success %}
       <div class="mt-5 bg-green-100 border border-green-300 text-green-800 p-4 rounded-lg text-center font-medium">
         ✅ {{ success }}
@@ -89,15 +96,20 @@
     <div class="mt-8 text-center text-gray-500 text-sm">
       <p>Created by <span class="font-semibold text-orange-600">Home Depot EAP3</span></p>
     </div>
+
   </div>
 
+  <!-- JS for loading state -->
   <script>
-    // Show "Processing..." message when form is submitted
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('uploadForm');
       const loadingText = document.getElementById('loadingText');
+      const button = form.querySelector('button');
+
       form.addEventListener('submit', () => {
         loadingText.classList.remove('hidden');
+        button.disabled = true;
+        button.textContent = 'Processing...';
       });
     });
   </script>
