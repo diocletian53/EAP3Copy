@@ -217,10 +217,17 @@ def process_excels(main_file, master_file, carrier, vlookup_file=None):
         "Critical Pull Time": "CPT",
         "Master ScanCutTime": "Scan Cut"
     })
-    master["HUB_City_Name_norm"] = master["HUB_City_Name"].str.strip().str.upper()
-    master["HUB_CD_norm"] = master["HUB_CD"].astype(str).str.strip()
-    summary_df["HUB_City_Name_norm"] = summary_df["HUB_City_Name"].str.strip().str.upper()
-    summary_df["HUB_CD_norm"] = summary_df["HUB_CD"].astype(str).str.strip()
+    #Formatting Data Types
+    #master["HUB_City_Name_norm"] = master["HUB_City_Name"].str.strip().str.upper()
+    #master["HUB_CD_norm"] = master["HUB_CD"].astype(str).str.strip()
+    #summary_df["HUB_City_Name_norm"] = summary_df["HUB_City_Name"].str.strip().str.upper()
+    #summary_df["HUB_CD_norm"] = summary_df["HUB_CD"].astype(str).str.strip()
+
+    master["HUB_City_Name_norm"] = master["HUB_City_Name"]
+    master["HUB_CD_norm"] = master["HUB_CD"]
+    summary_df["HUB_City_Name_norm"] = summary_df["HUB_City_Name"]
+    summary_df["HUB_CD_norm"] = summary_df["HUB_CD"]
+
 
     # ---------- Step 3: Merge ----------
     merged = summary_df.merge(
